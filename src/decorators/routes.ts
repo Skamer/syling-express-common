@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { HttpMethods } from "./http-methods";
 import { MetadataKeys } from "./metadata-keys";
 
-const routeBinder = (method: string) => (target: any, key: string, desc: PropertyDecorator) => {
+const routeBinder = (method: string) => (path: string) =>  (target: any, key: string, desc: PropertyDecorator) => {
   Reflect.defineMetadata(MetadataKeys.path, path, target, key);
   Reflect.defineMetadata(MetadataKeys.method, method, target, key);
 };
