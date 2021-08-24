@@ -10,7 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags')
     steps:
       - uses: actions/checkout@v2
 
@@ -28,8 +27,12 @@ jobs:
 
       - run: npm install
 
+  publish:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags')
+    needs: [build]
+    steps:
       - run: npx tsc
-
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN}}
