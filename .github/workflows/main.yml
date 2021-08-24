@@ -32,6 +32,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags')
     needs: [build]
     steps:
+      - run: ls
       - run: npx tsc
       - run: npm publish
         env:
