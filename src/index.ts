@@ -15,3 +15,4 @@ export * from "./decorators/metadata-keys";
 export * from "./decorators/routes";
 export * from "./decorators/serialize-response";
 export * from "./decorators/validate-request";
+export * from "./decorators/use";
