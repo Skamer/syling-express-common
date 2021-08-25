@@ -4,4 +4,6 @@ export enum MetadataKeys {
   middleware = "middleware",
   serialization = "serialization",
   validation = "validation",
+  controller = "controller",
+  routePrefix = "routePrefix",
 }
