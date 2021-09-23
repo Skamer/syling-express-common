@@ -6,4 +6,5 @@ export enum MetadataKeys {
   validation = "validation",
   controller = "controller",
   routePrefix = "routePrefix",
+  executeHandler = "executeHandler",
 }

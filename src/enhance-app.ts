@@ -24,6 +24,11 @@ const registerControllers = (app: Express, container: Container) => {
       const middlewares = Reflect.getMetadata(MetadataKeys.middleware, target.prototype, key) || [];
       const serialize = Reflect.getMetadata(MetadataKeys.serialization, target.prototype, key);
       const validate = Reflect.getMetadata(MetadataKeys.validation, target.prototype, key);
+      const executeHandler = Reflect.getMetadata(
+        MetadataKeys.executeHandler,
+        target.prototype,
+        key
+      );
 
       if (validate) {
         middlewares.push(validate);
@@ -34,7 +39,11 @@ const registerControllers = (app: Express, container: Container) => {
       }
 
       if (path) {
-        router[method](`${routePrefix}${path}`, ...middlewares, routeHandler.bind(controller));
+        if (routeHandler && executeHandler) {
+          router[method](`${routePrefix}${path}`, ...middlewares, routeHandler.bind(controller));
+        } else {
+          router[method](`${routePrefix}${path}`, ...middlewares);
+        }
       }
     }
   });
