@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { plainToClass } from "class-transformer";
 import { validate } from "class-validator";
 import { MetadataKeys } from "./metadata-keys";
+import { RequestValidationError } from "../errors/request-validation-error";
 
 export const validateRequest = (type: any) => (target: any, key: string) => {
   const validateMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -16,7 +17,7 @@ export const validateRequest = (type: any) => (target: any, key: string) => {
     const errors = await validate(oData);
 
     if (errors) {
-      // next(new RequestValidationError(error))
+      next(new RequestValidationError(errors));
     } else {
       next();
     }
