@@ -16,7 +16,7 @@ export const validateRequest = (type: any) => (target: any, key: string) => {
     const oData = plainToClass(type, req.body);
     const errors = await validate(oData);
 
-    if (errors) {
+    if (errors && errors.length > 0) {
       next(new RequestValidationError(errors));
     } else {
       next();
