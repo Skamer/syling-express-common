@@ -13,7 +13,7 @@ export const validateRequest = (type: any) => (target: any, key: string) => {
       return;
     }
 
-    const oData = plainToClass(type, req.body);
+    const oData = plainToClass(type, req.body, { excludeExtraneousValues: true });
     const errors = await validate(oData);
 
     if (errors && errors.length > 0) {
@@ -25,3 +25,5 @@ export const validateRequest = (type: any) => (target: any, key: string) => {
 
   Reflect.defineMetadata(MetadataKeys.validation, validateMiddleware, target, key);
 };
+
+export const validateBody = validateRequest;
