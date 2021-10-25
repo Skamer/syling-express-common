@@ -13,12 +13,13 @@ export const validateRequest = (type: any) => (target: any, key: string) => {
       return;
     }
 
-    const oData = plainToClass(type, req.body, { excludeExtraneousValues: true });
-    const errors = await validate(oData);
+    const oData = plainToClass(type, req.body);
+    const errors = await validate(oData, { whitelist: true });
 
     if (errors && errors.length > 0) {
       next(new RequestValidationError(errors));
     } else {
+      req.body = oData;
       next();
     }
   };
