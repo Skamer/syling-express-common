@@ -3,9 +3,7 @@ import { Container } from "inversify";
 import { MetadataKeys } from "./decorators/metadata-keys";
 import { HttpMethods } from "./decorators/http-methods";
 
-const routers: Router[] = [];
-
-const registerControllers = (app: Express, container: Container) => {
+const registerControllers = (app: Express, container: Container, routers: Router[]) => {
   const controllerPrototypes = Reflect.getMetadata(MetadataKeys.controller, Reflect) || [];
 
   controllerPrototypes.forEach((target: Function) => {
@@ -50,7 +48,9 @@ const registerControllers = (app: Express, container: Container) => {
 };
 
 export const enhanceApp = (app: Express, container: Container) => {
-  registerControllers(app, container);
+  const routers: Router[] = [];
+
+  registerControllers(app, container, routers);
 
   routers.forEach((router) => app.use(router));
 };
