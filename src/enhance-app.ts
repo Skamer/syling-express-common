@@ -14,11 +14,16 @@ const registerControllers = (app: Express, container: Container, routers: Router
     const router = express.Router();
     routers.push(router);
 
-    for (let key in target.prototype) {
+    Reflect.ownKeys(target.prototype).forEach((key) => {
       const routeHandler = target.prototype[key];
 
       const path = Reflect.getMetadata(MetadataKeys.path, target.prototype, key);
       const method: HttpMethods = Reflect.getMetadata(MetadataKeys.method, target.prototype, key);
+
+      if (!path || !method) {
+        return;
+      }
+
       const middlewares = Reflect.getMetadata(MetadataKeys.middleware, target.prototype, key) || [];
       const serialize = Reflect.getMetadata(MetadataKeys.serialization, target.prototype, key);
       const validate = Reflect.getMetadata(MetadataKeys.validation, target.prototype, key);
@@ -36,14 +41,12 @@ const registerControllers = (app: Express, container: Container, routers: Router
         middlewares.push(serialize);
       }
 
-      if (path) {
-        if (routeHandler && executeHandler) {
-          router[method](`${routePrefix}${path}`, ...middlewares, routeHandler.bind(controller));
-        } else {
-          router[method](`${routePrefix}${path}`, ...middlewares);
-        }
+      if (routeHandler && executeHandler) {
+        router[method](`${routePrefix}${path}`, ...middlewares, routeHandler.bind(controller));
+      } else {
+        router[method](`${routePrefix}${path}`, ...middlewares);
       }
-    }
+    });
   });
 };
 
