@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { HttpException } from "../exceptions/http.exception";
 import { CustomError } from "../errors/custom-error";
 
 export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -9,4 +10,10 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
       error: err.name,
     });
   }
+
+  if (err instanceof HttpException) {
+    return res.status(err.getStatus()).send(err.getResponse());
+  }
+
+  console.log("Errror", err);
 };

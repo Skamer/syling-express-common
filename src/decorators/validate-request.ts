@@ -1,23 +1,38 @@
 import "reflect-metadata";
 import { NextFunction, Request, Response } from "express";
-import { plainToClass } from "class-transformer";
-import { validate } from "class-validator";
+import { plainToInstance } from "class-transformer";
+import { validate, ValidationError } from "class-validator";
 import { MetadataKeys } from "./metadata-keys";
-import { RequestValidationError } from "../errors/request-validation-error";
+import { InvalidRequestBodyException } from "../exceptions/invalid-request-body.exception";
+
+const serializeErrors = (errors: ValidationError[]) => {
+  const serializedErrors: any[] = [];
+
+  errors.forEach((err) => {
+    if (err.constraints !== undefined) {
+      for (const contraint in err.constraints) {
+        serializedErrors.push({
+          field: err.property,
+          message: err.constraints[contraint],
+        });
+      }
+    }
+  });
+
+  return serializedErrors;
+};
 
 export const validateRequest = (type: any) => (target: any, key: string) => {
   const validateMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if (!req.body) {
-      // @TODO: add an exception here
-      res.send("Error");
-      return;
+      next(new InvalidRequestBodyException("body is missing"));
     }
 
-    const oData = plainToClass(type, req.body);
+    const oData = plainToInstance(type, req.body);
     const errors = await validate(oData, { whitelist: true });
 
     if (errors && errors.length > 0) {
-      next(new RequestValidationError(errors));
+      next(new InvalidRequestBodyException(serializeErrors(errors)));
     } else {
       req.body = oData;
       next();
